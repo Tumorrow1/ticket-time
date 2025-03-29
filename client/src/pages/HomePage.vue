@@ -19,6 +19,8 @@ const displaytowerevents = computed(() => {
 
 const filterType = ref(`all`)
 
+// TODO i need to go back to all
+
 const types = [
   {
     name: `concert`
@@ -34,6 +36,10 @@ const types = [
   },
   {
     name: `digital`
+
+  },
+  {
+    name: `all`
 
   },
 ]

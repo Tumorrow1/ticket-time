@@ -1,6 +1,7 @@
 import { Auth0Provider } from '@bcwdev/auth0provider'
 import { accountService } from '../services/AccountService.js'
 import BaseController from '../utils/BaseController.js'
+import { ticketService } from '../services/TicketService.js'
 
 export class AccountController extends BaseController {
   constructor() {
@@ -9,6 +10,8 @@ export class AccountController extends BaseController {
       .use(Auth0Provider.getAuthorizedUserInfo)
       .get('', this.getUserAccount)
       .put('', this.editUserAccount)
+      .get(`/tickets`, this.getMyTickets)
+    // TODO get tickets to events I have (get albums I am watching)
   }
 
   async getUserAccount(req, res, next) {
@@ -20,7 +23,7 @@ export class AccountController extends BaseController {
     }
   }
 
-   async editUserAccount(req, res, next) {
+  async editUserAccount(req, res, next) {
     try {
       const accountId = req.userInfo.id
       req.body.id = accountId
@@ -30,5 +33,16 @@ export class AccountController extends BaseController {
       next(error)
     }
   }
-  
+
+  async getMyTickets(request, response, next) {
+    try {
+      const userInfo = request.userInfo
+      const Tickets = await ticketService.getMyTickets(userInfo.id)
+      response.send(Tickets)
+    }
+    catch (error) {
+      next(error)
+    }
+  }
+
 }

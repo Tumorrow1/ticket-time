@@ -3,6 +3,7 @@ import BaseController from "../utils/BaseController.js";
 import { eventsService } from "../services/EventsService.js";
 import { Auth0Provider } from "@bcwdev/auth0provider";
 import { dbContext } from "../db/DbContext.js";
+import { ticketService } from "../services/TicketService.js";
 
 export class EventsController extends BaseController {
   constructor() {
@@ -10,10 +11,12 @@ export class EventsController extends BaseController {
     this.router
       .get(`/:eventId`, this.getAllEventsById)
       .get(``, this.getAllEvents)
+      .get(`/:eventId/tickets`, this.getEventTickets)
       .use(Auth0Provider.getAuthorizedUserInfo)
       .put(`/:eventId`, this.editEvent)
       .post(``, this.createEvent)
       .delete(`/:eventId`, this.cancelEvent)
+    // TODO Get Tickets for an event, Ref (watchers watching an album)
 
 
   }
@@ -95,6 +98,21 @@ export class EventsController extends BaseController {
       console.log(`no data`, eventData) //good
       const event = await eventsService.createEvent(eventData)
       response.send(event)
+    } catch (error) {
+      next(error)
+    }
+  }
+  /**
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @param {import("express").NextFunction} next
+   */
+  async getEventTickets(request, response, next) {
+    try {
+      const towerEventId = request.params.eventId
+      const tickets = await ticketService.getEventTicket(towerEventId)
+      response.send(tickets)
+
     } catch (error) {
       next(error)
     }

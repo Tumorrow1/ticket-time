@@ -16,7 +16,10 @@ defineProps({
     <div class="card d-flex">
       <img :src="towerEvent.coverImg" class="card-img-top" :alt="towerEvent.name">
       <div class="card-body">
+
+        <p class="card-text">{{ towerEvent.name }}</p>
         <p class="card-text">{{ towerEvent.description }}</p>
+
 
         <span>{{ towerEvent.ticketCount }}</span>
         <div>
