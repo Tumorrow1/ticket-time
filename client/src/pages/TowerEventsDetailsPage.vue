@@ -132,6 +132,7 @@ async function deleatComment(id) {
               <!-- TODO this only shows up if the even is sold out (the capacity and ticket count are the same) -->
               <h3 v-if="activeEvent.capacity == activeEvent.ticketCount" class="text-teal">SOLD OUT</h3>
               <p class="card-text">{{ activeEvent.description }}</p>
+
               <div>{{ activeEvent.ticketCount }}</div>
               <div>{{ activeEvent.capacity }}</div>
               <div>{{ activeEvent.location }}</div>
@@ -145,7 +146,8 @@ async function deleatComment(id) {
               </button>
               <div
                 v-if="tickets && tickets.findIndex(ticket => ticket.accountId === account.id && ticket.eventId === activeEvent.id) > -1">
-                going</div>
+                <i class="mdi mdi-check"></i>
+              </div>
             </div>
           </div>
           <div>
