@@ -10,10 +10,13 @@ import { isCancel } from 'axios';
 import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import AccountPage from './AccountPage.vue';
+import { commentService } from '@/services/CommentService.js';
 
 const route = useRoute()
 const tickets = computed(() => AppState.tickets)
 const activeEvent = computed(() => AppState.towerEvent)
+const comments = computed(() => AppState.comments)
+const account = computed(() => AppState.account)
 
 // TODO 6,7 is if we can
 // TODO 6, Get Tickets From Appstate
@@ -23,6 +26,9 @@ const activeEvent = computed(() => AppState.towerEvent)
 onMounted(() => {
   getTowerEventsById()
   getTicketById()
+  getCommentsByEvent()
+  // console.log(`hi `, activeEvent.value.creatorId + " vs. " + account.value.id)
+
 
 })
 
@@ -34,6 +40,16 @@ async function getTowerEventsById() {
   } catch (error) {
     Pop.error(error, `couldnt get enent by id `)
     logger.error(`no event by id man`)
+  }
+}
+async function getCommentsByEvent() {
+  try {
+    const eventId = route.params.eventsId
+    console.log(`does it atualy work`, eventId)
+    await commentService.getCommentsByEvent(eventId)
+  } catch (error) {
+    Pop.error(error, `couldnt get comment by id `)
+    logger.error(`no event by comment man`)
   }
 }
 
@@ -73,6 +89,29 @@ async function getTicketById() {
   }
 }
 
+async function createComment() {
+  try {
+    console.log(`create a comment`)
+    document.getElementById(`CommentsHere`)
+    const body = document.getElementById(`CommentsHere`).value
+    console.log(`getting to the body`, body)
+    const commentData = { eventId: route.params.eventsId, body }
+    await commentService.createComment(commentData)
+
+
+  } catch (error) {
+    Pop.error(error)
+  }
+}
+async function deleatComment(id) {
+  try {
+    console.log(`deleat maybe please`)
+    commentService.deleatComment(id)
+  } catch (error) {
+    Pop.error
+  }
+
+}
 </script>
 
 
@@ -99,15 +138,20 @@ async function getTicketById() {
               <div>{{ activeEvent.startDate }}</div>
               <div>{{ activeEvent.type }}</div>
             </div>
-            <div><button @click="cancelEvent()" class="btn btn-danger">Event
+            <div><button v-if="account && account.id === activeEvent.creatorId" @click="cancelEvent()"
+                class="btn btn-danger">Event
                 {{ activeEvent.isCanceled ? `is canceled` : `is not canceled` }}
 
               </button>
+              <div
+                v-if="tickets && tickets.findIndex(ticket => ticket.accountId === account.id && ticket.eventId === activeEvent.id) > -1">
+                going</div>
             </div>
           </div>
           <div>
             <!-- TODO HIDE THIS BUTTON WHEN SOLD OUT AND WHEN THE EVENT IS CANCELED -->
-            <button @click="createTicket()">
+            <button v-if="activeEvent && !activeEvent.isCanceled && activeEvent.capacity > activeEvent.ticketCount"
+              @click="createTicket()">
               getTicket
             </button>
           </div>
@@ -121,8 +165,22 @@ async function getTicketById() {
           </div>
         </div>
         <div>
-          {{ }}
+          <button @click="createComment()"> Commment
+          </button>
+          <textarea placeholder="leave a comment ..." name="comment here " id="CommentsHere"></textarea>
         </div>
+        <div v-for="comment in comments" :key="comment.id">
+          <div v-if="comment.creator">
+            <div>{{ comment.body }}</div>
+
+            <img :src="comment.creator.picture" alt="">
+            {{ comment.creator.name }}
+            <button @click="deleatComment(comment.id)">deleat</button>
+          </div>
+
+        </div>
+
+
 
       </div>
     </div>

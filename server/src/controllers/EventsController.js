@@ -4,11 +4,13 @@ import { eventsService } from "../services/EventsService.js";
 import { Auth0Provider } from "@bcwdev/auth0provider";
 import { dbContext } from "../db/DbContext.js";
 import { ticketService } from "../services/TicketService.js";
+import { commentService } from "../services/CommentService.js";
 
 export class EventsController extends BaseController {
   constructor() {
     super(`api/events`)
     this.router
+      .get(`/:eventId/comments`, this.getEventComments)
       .get(`/:eventId`, this.getAllEventsById)
       .get(``, this.getAllEvents)
       .get(`/:eventId/tickets`, this.getEventTickets)
@@ -113,6 +115,20 @@ export class EventsController extends BaseController {
       const tickets = await ticketService.getEventTicket(towerEventId)
       response.send(tickets)
 
+    } catch (error) {
+      next(error)
+    }
+  }
+  /**
+    * @param {import("express").Request} request
+    * @param {import("express").Response} response
+    * @param {import("express").NextFunction} next
+    */
+  async getEventComments(request, response, next) {
+    try {
+      const eventId = request.params.eventId
+      const comments = await commentService.getEventComments(eventId)
+      response.send(comments)
     } catch (error) {
       next(error)
     }

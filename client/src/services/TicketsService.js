@@ -18,6 +18,7 @@ class TicketsService {
     // TODO 5, Change The State (AppState)
     const ticket = new Ticket(response.data)
     AppState.tickets.push(ticket)
+    AppState.towerEvent.ticketCount++
     console.log(`no ticketrs`)
     return ticket
   }
